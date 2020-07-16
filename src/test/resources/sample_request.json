@@ -1,0 +1,8 @@
+{
+  "id": 3,
+  "name": "Avadhut",
+  "age": 35,
+  "address": {
+    "city": "mumbai"
+  }
+}
