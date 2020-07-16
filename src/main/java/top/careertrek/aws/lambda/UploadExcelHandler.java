@@ -29,49 +29,44 @@ public class UploadExcelHandler implements RequestHandler<APIGatewayProxyRequest
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 
         try{
-            //Log the length of the incoming body
             logger.log(event.getBody());
-
-            //Create the APIGatewayProxyResponseEvent response
-
-            //Set up contentType String
             String contentType = "";
             byte[] bI = Base64.decodeBase64(event.getBody().getBytes());
 
             //Get the content-type header and extract the boundary
             Map<String, String> hps = event.getHeaders();
-            if (hps != null) {
-                contentType = hps.get("content-type");
-            }
-            String[] boundaryArray = contentType.split("=");
+            hps.entrySet().forEach(entry -> {
+                logger.log("Header key "+entry.getKey()+" Header Value "+entry.getValue());
+            });
+            /*String[] boundaryArray = contentType.split("=");
             //Transform the boundary to a byte array
             byte[] boundary = boundaryArray[1].getBytes();
-            //Log the extraction for verification purposes
+            *///Log the extraction for verification purposes
             logger.log(new String(bI, "UTF-8") + "\n");
             //Create a ByteArrayInputStream
             ByteArrayInputStream content = new ByteArrayInputStream(bI);
             //Create a MultipartStream to process the form-data
-            MultipartStream multipartStream = new MultipartStream(content, boundary, bI.length, null);
-            //Create a ByteArrayOutputStream
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            //Find first boundary in the MultipartStream
-            boolean nextPart = multipartStream.skipPreamble();
-            //Loop through each segment
-            while (nextPart)
-            {
-                String header = multipartStream.readHeaders();
-                //Log header for debugging
-                logger.log("Headers:");
-                logger.log(header);
-                //Write out the file to our ByteArrayOutputStream
-                multipartStream.readBodyData(out);
-                //Get the next part, if any
-                nextPart = multipartStream.readBoundary();
-            }
+//            MultipartStream multipartStream = new MultipartStream(content, boundary, bI.length, null);
+//            //Create a ByteArrayOutputStream
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            //Find first boundary in the MultipartStream
+//            boolean nextPart = multipartStream.skipPreamble();
+//            //Loop through each segment
+//            while (nextPart)
+//            {
+//                String header = multipartStream.readHeaders();
+//                //Log header for debugging
+//                logger.log("Headers:");
+//                logger.log(header);
+//                //Write out the file to our ByteArrayOutputStream
+//                multipartStream.readBodyData(out);
+//                //Get the next part, if any
+//                nextPart = multipartStream.readBoundary();
+//            }
             //Log completion of MultipartStream processing
             logger.log("Data written to ByteStream");
             //Prepare an InputStream from the ByteArrayOutputStream
-            InputStream fis = new ByteArrayInputStream(out.toByteArray());
+            //InputStream fis = new ByteArrayInputStream(out.toByteArray());
             response.setStatusCode(200);
             response.setBody("Read excel of length "+event.getBody().length());
             return response;
